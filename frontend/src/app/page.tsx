@@ -69,7 +69,7 @@ export default function Home() {
     <motion.div
       initial={{ opacity: 0.6, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      whileHover={{ rotateX: 15, rotateY: 10, scale: 0.95 }}
+      whileHover={{ rotateX: 15, rotateY: 10, scale: 1.05 }}
       transition={{ type: "spring", stiffness: 300, damping: 20 }}
       style={{ transformStyle: "preserve-3d" }}
       className="bg-white/20 dark:bg-white/10 backdrop-blur-lg border border-white/30 rounded-xl p-4 shadow-md cursor-pointer select-none"
@@ -80,8 +80,10 @@ export default function Home() {
   );
 
   return (
-    <div className="relative min-h-screen w-full overflow-auto bg-gradient-to-b from-blue-500 to-blue-700 dark:from-gray-900 dark:to-black text-white">
-      {/* Animated Video Background */}
+    <div
+      className="relative min-h-screen w-full overflow-auto bg-gradient-to-b from-blue-500 to-blue-700 dark:from-gray-900 dark:to-black text-white"
+    >
+      {/* Video Background */}
       <video
         autoPlay
         loop
@@ -89,6 +91,8 @@ export default function Home() {
         className="absolute inset-0 w-full h-full object-cover z-0 opacity-20 pointer-events-none"
       >
         <source src="/weather-bg.mp4" type="video/mp4" />
+        {/* Fallback text if video not supported */}
+        Your browser does not support the video tag.
       </video>
 
       {/* Content Wrapper */}
@@ -193,8 +197,5 @@ export default function Home() {
     </div>
   );
 }
-
-
-
 
 
