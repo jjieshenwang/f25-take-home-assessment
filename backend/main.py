@@ -1,4 +1,6 @@
+import uuid
 from fastapi import FastAPI, HTTPException
+import requests
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import Dict, Any, Optional
@@ -25,8 +27,10 @@ class WeatherRequest(BaseModel):
 class WeatherResponse(BaseModel):
     id: str
 
+
 @app.post("/weather", response_model=WeatherResponse)
 async def create_weather_request(request: WeatherRequest):
+    
     """
     You need to implement this endpoint to handle the following:
     1. Receive form data (date, location, notes)
@@ -34,8 +38,33 @@ async def create_weather_request(request: WeatherRequest):
     3. Stores combined data with unique ID in memory
     4. Returns the ID to frontend
     """
-    pass
+    weather_url = "http://api.weatherstack.com/current"
+    params = {
+        "access_key": "de78da516b894e222213ed03e6a78cab",
+        "query": request.location,
+        "historical_date": request.date,
+        "units": "m"
+    }
 
+    response = requests.get(weather_url, params=params)
+    if response.status_code != 200:
+        raise HTTPException(status_code=500, detail= "Failed to fetch weather data")
+    
+    weather_data = response.json()
+
+    if "error" in weather_data:
+        raise HTTPException(status_code = 400, detail=weather_data["error"].get("info", "Weather API error"))
+
+    record_id = str(uuid.uuid4())
+    weather_storage[record_id]= {
+        "date": request.date,
+        "location": request.location,
+        "notes": request.notes,
+        "weather": weather_data
+
+    }
+    return WeatherResponse(id=record_id)
+    
 @app.get("/weather/{weather_id}")
 async def get_weather_data(weather_id: str):
     """
